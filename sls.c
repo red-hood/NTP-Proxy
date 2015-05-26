@@ -40,6 +40,11 @@ bool STATUS=false;    // Print LS status only
 
 #define NRLENGTH 10   // Max number of digits for delay (incl. trailing null byte)
 
+#ifdef sun
+#define ADJ_STATUS MOD_STATUS
+#define adjtimex ntp_adjtime
+#endif
+
 void pstatus();
 void pparam(int, char **);
 void usage();
@@ -50,6 +55,8 @@ char *argv[];
 {
 struct timeval tv;
 struct timex tx;
+
+memset(&tx, 0, sizeof(struct timex));
 
 // Parse parameters
 pparam(argc, argv);
@@ -120,6 +127,7 @@ void pstatus()
 {
 struct timex tx;
 
+memset(&tx, 0, sizeof(struct timex));
 tx.modes=0;
 if(adjtimex(&tx) == -1)
 {
